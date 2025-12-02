@@ -39,3 +39,4 @@ Thumbs.db
 static/uploads/
 # Cache
 cache/
+docker/push_image.sh

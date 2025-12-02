@@ -7,7 +7,7 @@ services:
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword}
-      MYSQL_DATABASE: ${MYSQL_DATABASE:-bodybuilding}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-leangain_ai}
       MYSQL_USER: ${MYSQL_USER:-appuser}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD:-apppassword}
     ports:
@@ -37,7 +37,7 @@ services:
       - DATABASE_HOST=mysql
       - DATABASE_USER=${MYSQL_USER:-appuser}
       - DATABASE_PASSWORD=${MYSQL_PASSWORD:-apppassword}
-      - DATABASE_NAME=${MYSQL_DATABASE:-bodybuilding}
+      - DATABASE_NAME=${MYSQL_DATABASE:-leangain_ai}
       - SECRET_KEY=${SECRET_KEY:-dev-secret-key}
       - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}
       - DEEPSEEK_BASE_URL=${DEEPSEEK_BASE_URL:-https://api.deepseek.com}

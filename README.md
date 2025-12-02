@@ -80,8 +80,8 @@ project/
 ### 2. 克隆项目
 
 ```bash
-git clone <repository-url>
-cd body-build
+git clone https://github.com/JackSuran/LeanGain-AI.git
+cd LeanGain-AI
 ```
 
 ### 3. 创建虚拟环境并安装依赖
@@ -113,7 +113,7 @@ SECRET_KEY=your-secret-key-change-this
 DATABASE_HOST=localhost
 DATABASE_USER=root
 DATABASE_PASSWORD=yourpassword
-DATABASE_NAME=bodybuilding
+DATABASE_NAME=leangain_ai
 DEEPSEEK_API_KEY=your-deepseek-api-key
 DEEPSEEK_BASE_URL=https://api.deepseek.com
 ```
@@ -123,7 +123,7 @@ DEEPSEEK_BASE_URL=https://api.deepseek.com
 确保MySQL服务运行，并创建数据库：
 
 ```sql
-CREATE DATABASE bodybuilding;
+CREATE DATABASE leangain_ai;
 ```
 
 然后运行数据库创建脚本（创建数据库和表）：
@@ -204,7 +204,7 @@ docker run -d \
   -e DATABASE_HOST=host.docker.internal \
   -e DATABASE_USER=appuser \
   -e DATABASE_PASSWORD=apppassword \
-  -e DATABASE_NAME=bodybuilding \
+  -e DATABASE_NAME=leangain_ai \
   -e SECRET_KEY=your-secret-key \
   -e DEEPSEEK_API_KEY=your-api-key \
   your-dockerhub-username/leangain-ai:latest
@@ -225,7 +225,7 @@ docker run -d \
 如果遇到数据库连接错误，请检查：
 - MySQL服务是否运行
 - `.env`中的用户名、密码、主机名是否正确
-- 数据库`bodybuilding`是否存在
+- 数据库`leangain_ai`是否存在
 
 ### DeepSeek API
 

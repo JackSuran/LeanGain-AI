@@ -28,7 +28,7 @@ docker build -t leangain-ai:latest -f Dockerfile ..
 docker run -d \
   --name mysql-leangain \
   -e MYSQL_ROOT_PASSWORD=rootpassword \
-  -e MYSQL_DATABASE=bodybuilding \
+  -e MYSQL_DATABASE=leangain_ai \
   -e MYSQL_USER=appuser \
   -e MYSQL_PASSWORD=apppassword \
   -p 3306:3306 \
@@ -44,7 +44,7 @@ docker run -d \
   -e DATABASE_HOST=host.docker.internal  # Windows/macOS 用 host.docker.internal，Linux 用实际 IP
   -e DATABASE_USER=appuser \
   -e DATABASE_PASSWORD=apppassword \
-  -e DATABASE_NAME=bodybuilding \
+  -e DATABASE_NAME=leangain_ai \
   -e SECRET_KEY=your-secret-key \
   -e DEEPSEEK_API_KEY=your-api-key \
   your-dockerhub-username/leangain-ai:latest
@@ -97,7 +97,7 @@ docker-compose down
 
 - 查看运行中的容器：`docker-compose ps`
 - 进入应用容器：`docker-compose exec app bash`
-- 备份数据库：`docker-compose exec mysql mysqldump -u appuser -papppassword bodybuilding > backup.sql`
+- 备份数据库：`docker-compose exec mysql mysqldump -u appuser -papppassword leangain_ai > backup.sql`
 
 ## 6. 自定义配置
 
