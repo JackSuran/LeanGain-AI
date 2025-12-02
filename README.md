@@ -32,6 +32,12 @@ project/
 ├── FIX_LOG.md            # 修复日志
 ├── PROJECT_PLAN.md       # 项目计划文档
 ├── README.md             # 项目说明
+├── docker/               # Docker相关文件
+│   ├── Dockerfile        # 应用镜像定义
+│   ├── docker-compose.yml # 多服务编排
+│   ├── push_image.sh     # 镜像推送脚本
+│   ├── docker-start.sh   # 快速启动脚本
+│   └── USAGE.md          # Docker使用说明
 ├── database/             # 数据库相关
 │   ├── db_connection.py  # 数据库连接
 │   └── models.py         # 数据模型
@@ -137,7 +143,74 @@ python app.py
 
 访问 http://127.0.0.1:5000
 
-### 7. 使用流程
+### 7. 使用 Docker 运行（推荐）
+
+项目已提供完整的 Docker 支持，可以快速启动包含 MySQL 和 Flask 应用的完整环境。
+
+#### 使用 Docker Compose
+
+1. 确保已安装 [Docker](https://docs.docker.com/get-docker/) 和 [Docker Compose](https://docs.docker.com/compose/install/)。
+
+2. 进入项目目录，复制环境变量文件并配置：
+
+```bash
+cd docker
+cp ../.env.example .env
+# 编辑 .env 文件，设置 DEEPSEEK_API_KEY 等（注意根据 Docker 环境调整 DATABASE_HOST 等变量）
+```
+
+3. 启动服务：
+
+```bash
+docker-compose up -d
+```
+
+4. 访问应用：http://localhost:5000
+
+5. 停止服务：
+
+```bash
+docker-compose down
+```
+
+更多详细说明请参阅 [docker/USAGE.md](docker/USAGE.md)。
+
+#### 网络问题解决
+
+如果在构建镜像时遇到 `python:3.9-slim` 拉取失败（网络问题），项目已改用 `python:3.9-alpine` 作为基础镜像，该镜像更小且更容易拉取。如果仍遇到网络问题，可以尝试以下方法：
+
+- **配置 Docker 镜像加速器**：编辑 Docker 配置文件（`daemon.json`）添加国内镜像源，如 `https://docker.mirrors.ustc.edu.cn`。
+- **离线构建**：预先在有网络的环境中拉取 `python:3.9-alpine` 和 `mysql:8.0` 镜像，导出为 tar 文件，然后在离线环境中导入。
+
+详细步骤请参阅 [docker/USAGE.md](docker/USAGE.md) 中的“网络问题与镜像加速”章节。
+
+#### 构建自定义镜像
+
+如果你想将镜像推送到自己的容器仓库，可以使用提供的脚本：
+
+```bash
+cd docker
+./push_image.sh --login
+```
+
+#### 直接使用 Docker 运行单个容器
+
+如果你已有 MySQL 服务，可以单独运行应用容器：
+
+```bash
+docker run -d \
+  --name leangain-app \
+  -p 5000:5000 \
+  -e DATABASE_HOST=host.docker.internal \
+  -e DATABASE_USER=appuser \
+  -e DATABASE_PASSWORD=apppassword \
+  -e DATABASE_NAME=bodybuilding \
+  -e SECRET_KEY=your-secret-key \
+  -e DEEPSEEK_API_KEY=your-api-key \
+  your-dockerhub-username/leangain-ai:latest
+```
+
+### 8. 使用流程
 
 1. 注册新账号
 2. 填写个人资料（身高、体重、目标、可用器械等）
@@ -162,20 +235,7 @@ python app.py
 
 ## 故障排除
 
-### 1. 模板错误 "No filter named 'fromjson'"
-此错误已在最新版本中修复。确保你使用的是最新的 `templates/plan/view.html` 和 `app.py`。如果仍出现，请检查 `view_plan` 函数是否正确解析 JSON 并传递 `workout_data`。
-
-### 2. 个人资料已保存但生成计划页面仍提示未填写
-确保 `generate_plan` 路由的 GET 请求传递了 `profile` 变量。已修复。
-
-### 3. 导航栏链接 "我的计划" 404
-确保 `app.py` 中包含 `/plan` 路由（已实现）。
-
-### 4. 控制台输出乱码
-Windows 控制台可能使用 GBK 编码，导致中文字符显示异常。这不会影响功能，可忽略。
-
-### 5. 缓存文件未生成
-首次请求运动描述时会调用API并生成缓存。确保 `cache/` 目录可写。
+遇到问题？请查阅 [FIX_LOG.md](FIX_LOG.md) 获取常见问题与修复方案。
 
 ## 开发
 

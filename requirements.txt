@@ -7,3 +7,4 @@ pydantic==2.5.0
 cryptography==42.0.5
 Werkzeug==2.3.7
 Jinja2==3.1.2
+gunicorn==21.2.0

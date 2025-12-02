@@ -1,0 +1,66 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: leangain-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-bodybuilding}
+      MYSQL_USER: ${MYSQL_USER:-appuser}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-apppassword}
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - leangain-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  app:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: leangain-app
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    ports:
+      - "5000:5000"
+    environment:
+      - DATABASE_HOST=mysql
+      - DATABASE_USER=${MYSQL_USER:-appuser}
+      - DATABASE_PASSWORD=${MYSQL_PASSWORD:-apppassword}
+      - DATABASE_NAME=${MYSQL_DATABASE:-bodybuilding}
+      - SECRET_KEY=${SECRET_KEY:-dev-secret-key}
+      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}
+      - DEEPSEEK_BASE_URL=${DEEPSEEK_BASE_URL:-https://api.deepseek.com}
+      - FLASK_APP=app.py
+      - FLASK_ENV=production
+    volumes:
+      - ../static:/app/static
+      - ../templates:/app/templates
+      - ../database:/app/database
+      - ../services:/app/services
+      - ../config.py:/app/config.py
+      - ../create_database.py:/app/create_database.py
+    networks:
+      - leangain-network
+    command: >
+      sh -c "
+        python create_database.py &&
+        gunicorn --bind 0.0.0.0:5000 app:app
+      "
+
+volumes:
+  mysql_data:
+
+networks:
+  leangain-network:
+    driver: bridge
