@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}首页 - 瘦子增重增肌锻炼系统{% endblock %}
+
+{% block content %}
+<div class="row align-items-center">
+    <div class="col-md-6">
+        <h1 class="display-4 fw-bold">欢迎来到增肌计划系统</h1>
+        <p class="lead">
+            专为瘦子设计的智能增重增肌锻炼系统。通过AI分析您的个人数据，生成个性化周计划，跟踪每日进展，助您科学增肌。
+        </p>
+        <div class="mt-4">
+            {% if session.user_id %}
+                <a href="{{ url_for('dashboard') }}" class="btn btn-primary btn-lg me-3">
+                    <i class="bi bi-speedometer2"></i> 进入仪表板
+                </a>
+                <a href="{{ url_for('plan') }}" class="btn btn-outline-primary btn-lg">
+                    <i class="bi bi-calendar-week"></i> 查看计划
+                </a>
+            {% else %}
+                <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg me-3">
+                    <i class="bi bi-person-plus"></i> 免费注册
+                </a>
+                <a href="{{ url_for('login') }}" class="btn btn-outline-primary btn-lg">
+                    <i class="bi bi-box-arrow-in-right"></i> 登录
+                </a>
+            {% endif %}
+        </div>
+    </div>
+    <div class="col-md-6">
+        <img src="{{ url_for('static', filename='images/hero.png') }}" alt="健身插图" class="img-fluid rounded" onerror="this.src='https://images.unsplash.com/photo-1534367507877-0edd93bd013b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'">
+    </div>
+</div>
+
+<div class="row mt-5">
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body text-center">
+                <i class="bi bi-robot display-4 text-primary"></i>
+                <h3 class="card-title mt-3">AI智能计划</h3>
+                <p class="card-text">基于DeepSeek AI，根据您的身体数据、可用器械和目标，生成个性化周锻炼计划。</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body text-center">
+                <i class="bi bi-calendar-check display-4 text-success"></i>
+                <h3 class="card-title mt-3">每日跟踪</h3>
+                <p class="card-text">将计划分解到每一天，记录完成情况、体重变化，可视化您的进步。</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body text-center">
+                <i class="bi bi-graph-up display-4 text-info"></i>
+                <h3 class="card-title mt-3">数据统计</h3>
+                <p class="card-text">通过图表分析体重趋势、训练量，帮助您调整策略，持续优化。</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

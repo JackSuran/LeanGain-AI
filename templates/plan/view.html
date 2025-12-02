@@ -1,0 +1,265 @@
+{% extends "base.html" %}
+
+{% block title %}周计划详情 - 瘦子增重增肌锻炼系统{% endblock %}
+
+{% block extra_css %}
+<style>
+    .day-card {
+        transition: transform 0.2s;
+    }
+    .day-card:hover {
+        transform: translateY(-5px);
+    }
+    .exercise-list {
+        list-style-type: none;
+        padding-left: 0;
+    }
+    .exercise-list li {
+        padding: 8px 0;
+        border-bottom: 1px solid #eee;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-10 mx-auto">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="bi bi-calendar-week"></i> 周计划详情</h2>
+            <div>
+                <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">返回仪表板</a>
+                <a href="{{ url_for('generate_plan') }}" class="btn btn-primary">生成新计划</a>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">计划概览</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <p><strong>开始日期：</strong>{{ plan.start_date }}</p>
+                    </div>
+                    <div class="col-md-4">
+                        <p><strong>结束日期：</strong>{{ plan.end_date }}</p>
+                    </div>
+                    <div class="col-md-4">
+                        <p><strong>生成时间：</strong>{{ plan.generated_at }}</p>
+                    </div>
+                </div>
+                <p class="mb-0">
+                    <strong>状态：</strong>
+                    {% if plan.is_active %}
+                    <span class="badge bg-success">活跃</span>
+                    {% else %}
+                    <span class="badge bg-secondary">已存档</span>
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+
+        <h4 class="mb-3">每日训练安排</h4>
+        <div class="row">
+            {% for day in daily_workouts %}
+            {% set day_data = day.workout_data %}
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card day-card h-100 shadow-sm {% if day.completed %}border-success{% endif %}">
+                    <div class="card-header {% if day.completed %}bg-success text-white{% else %}bg-light{% endif %}">
+                        <h5 class="mb-0">
+                            第 {{ day.day_number }} 天
+                            {% if day.completed %}
+                            <span class="badge bg-light text-success float-end">已完成</span>
+                            {% else %}
+                            <span class="badge bg-secondary float-end">待完成</span>
+                            {% endif %}
+                        </h5>
+                        <small class="text-muted">{{ day.date }}</small>
+                    </div>
+                    <div class="card-body">
+                        <h6 class="card-subtitle mb-2 text-primary">{{ day_data.focus }}</h6>
+                        <ul class="exercise-list">
+                            {% for ex in day_data.exercises %}
+                            <li>
+                                <strong>{{ ex.name }}</strong><br>
+                                <small>{{ ex.sets }} 组 × {{ ex.reps }} 次，重量 {{ ex.weight }}，休息 {{ ex.rest }}</small>
+                                <div class="mt-1">
+                                    <button class="btn btn-sm btn-outline-secondary exercise-detail-btn"
+                                            data-exercise-name="{{ ex.name }}"
+                                            data-day-id="{{ day.id }}">
+                                        <i class="bi bi-info-circle"></i> 运动介绍
+                                    </button>
+                                </div>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                        <p class="card-text"><small class="text-muted">{{ day_data.tips }}</small></p>
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        {% if not day.completed %}
+                        <form method="POST" action="{{ url_for('complete_daily', daily_id=day.id) }}" class="d-inline">
+                            <button type="submit" class="btn btn-success btn-sm">标记完成</button>
+                        </form>
+                        {% endif %}
+                        <a href="#" class="btn btn-outline-info btn-sm" data-bs-toggle="modal" data-bs-target="#dayModal{{ day.id }}">详情</a>
+                    </div>
+            
+            
+                </div>
+            </div>
+    
+            <!-- 模态框 -->
+            <div class="modal fade" id="dayModal{{ day.id }}" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">第 {{ day.day_number }} 天详情</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p><strong>训练重点：</strong>{{ day_data.focus }}</p>
+                            <p><strong>训练提示：</strong>{{ day_data.tips }}</p>
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>动作</th>
+                                        <th>组数</th>
+                                        <th>次数</th>
+                                        <th>重量</th>
+                                        <th>休息</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for ex in day_data.exercises %}
+                                    <tr>
+                                        <td>{{ ex.name }}</td>
+                                        <td>{{ ex.sets }}</td>
+                                        <td>{{ ex.reps }}</td>
+                                        <td>{{ ex.weight }}</td>
+                                        <td>{{ ex.rest }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                            {% if day.user_notes %}
+                            <p><strong>您的备注：</strong>{{ day.user_notes }}</p>
+                            {% endif %}
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="col-12">
+                <div class="alert alert-warning">
+                    暂无每日训练数据。请先生成计划。
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="card mt-4">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">计划操作</h5>
+            </div>
+            <div class="card-body">
+                <div class="btn-group" role="group">
+                    <a href="{{ url_for('generate_plan') }}" class="btn btn-primary">重新生成计划</a>
+                    <button class="btn btn-outline-secondary" disabled>导出为PDF</button>
+                    <button class="btn btn-outline-secondary" disabled>分享计划</button>
+                </div>
+                <p class="mt-3 text-muted small">
+                    <i class="bi bi-lightbulb"></i> 提示：完成每日训练后记得标记，系统会记录您的进度。
+                </p>
+            </div>
+        </div>
+
+        <!-- 运动介绍模态框 -->
+        <div class="modal fade" id="exerciseDescriptionModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exerciseModalTitle">运动介绍</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" id="exerciseModalBody">
+                        <div class="text-center">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">加载中...</span>
+                            </div>
+                            <p class="mt-2">正在生成介绍，请稍候...</p>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const exerciseDetailButtons = document.querySelectorAll('.exercise-detail-btn');
+            const modal = new bootstrap.Modal(document.getElementById('exerciseDescriptionModal'));
+            const modalTitle = document.getElementById('exerciseModalTitle');
+            const modalBody = document.getElementById('exerciseModalBody');
+
+            exerciseDetailButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const exerciseName = this.getAttribute('data-exercise-name');
+                    const dayId = this.getAttribute('data-day-id');
+                    modalTitle.textContent = `运动介绍：${exerciseName}`;
+                    modalBody.innerHTML = `
+                        <div class="text-center">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">加载中...</span>
+                            </div>
+                            <p class="mt-2">正在生成介绍，请稍候...</p>
+                        </div>
+                    `;
+                    modal.show();
+
+                    // 调用API获取介绍
+                    fetch(`/exercise/description?exercise_name=${encodeURIComponent(exerciseName)}`, {
+                        method: 'GET',
+                        headers: {
+                            'Accept': 'application/json',
+                        }
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('网络响应错误');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.error) {
+                            modalBody.innerHTML = `<div class="alert alert-danger">${data.error}</div>`;
+                        } else {
+                            // 使用marked将Markdown描述转换为HTML
+                            const descriptionHtml = marked.parse(data.description);
+                            modalBody.innerHTML = `
+                                <h6>${data.exercise_name}</h6>
+                                <div class="exercise-description">${descriptionHtml}</div>
+                                <p class="text-muted small mt-3"><i class="bi bi-info-circle"></i> 此介绍由AI生成，仅供参考。</p>
+                            `;
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        modalBody.innerHTML = `<div class="alert alert-danger">获取介绍失败：${error.message}</div>`;
+                    });
+                });
+            });
+        });
+        </script>
+
+    </div>
+</div>
+{% endblock %}

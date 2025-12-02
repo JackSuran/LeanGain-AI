@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %}注册 - 瘦子增重增肌锻炼系统{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0"><i class="bi bi-person-plus"></i> 用户注册</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('register') }}" class="needs-validation" novalidate>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="username" class="form-label">用户名 *</label>
+                            <input type="text" class="form-control" id="username" name="username" required minlength="3" maxlength="50">
+                            <div class="invalid-feedback">
+                                用户名必须为3-50个字符。
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="email" class="form-label">电子邮箱（可选）</label>
+                            <input type="email" class="form-control" id="email" name="email">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="password" class="form-label">密码 *</label>
+                            <input type="password" class="form-control" id="password" name="password" required minlength="6">
+                            <div class="invalid-feedback">
+                                密码至少6位。
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="confirm_password" class="form-label">确认密码 *</label>
+                            <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                            <div class="invalid-feedback">
+                                两次密码不一致。
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="agree" required>
+                            <label class="form-check-label" for="agree">
+                                我同意 <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal">服务条款</a>
+                            </label>
+                            <div class="invalid-feedback">
+                                必须同意服务条款。
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-success btn-lg">注册账号</button>
+                    </div>
+                </form>
+                <hr class="my-4">
+                <p class="text-center mb-0">
+                    已有账号？ <a href="{{ url_for('login') }}">直接登录</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 条款模态框 -->
+<div class="modal fade" id="termsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">服务条款</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>欢迎使用瘦子增重增肌锻炼系统。本系统旨在提供健身计划辅助，不替代专业医疗或健身教练建议。</p>
+                <p>用户应确保自身健康状况适合进行锻炼，并在必要时咨询医生。系统生成的计划仅供参考，用户需根据自身情况调整。</p>
+                <p>我们不会分享您的个人数据给第三方，但保留匿名化数据用于改进服务。</p>
+                <p>使用本系统即表示您理解并同意上述条款。</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// 密码确认验证
+document.addEventListener('DOMContentLoaded', function() {
+    const password = document.getElementById('password');
+    const confirm = document.getElementById('confirm_password');
+    function validatePassword() {
+        if (password.value !== confirm.value) {
+            confirm.setCustomValidity('两次密码不一致');
+        } else {
+            confirm.setCustomValidity('');
+        }
+    }
+    password.addEventListener('change', validatePassword);
+    confirm.addEventListener('keyup', validatePassword);
+});
+</script>
+{% endblock %}

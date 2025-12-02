@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}登录 - 瘦子增重增肌锻炼系统{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0"><i class="bi bi-box-arrow-in-right"></i> 用户登录</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('login') }}" class="needs-validation" novalidate>
+                    <div class="mb-3">
+                        <label for="username" class="form-label">用户名</label>
+                        <input type="text" class="form-control" id="username" name="username" required>
+                        <div class="invalid-feedback">
+                            请输入用户名。
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">密码</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                        <div class="invalid-feedback">
+                            请输入密码。
+                        </div>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary btn-lg">登录</button>
+                    </div>
+                </form>
+                <hr class="my-4">
+                <p class="text-center mb-0">
+                    还没有账号？ <a href="{{ url_for('register') }}">立即注册</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

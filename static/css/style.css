@@ -1,0 +1,59 @@
+/* 自定义样式 */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
+}
+
+.navbar-brand {
+    font-weight: 700;
+}
+
+.card {
+    transition: transform 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.btn-primary {
+    background-color: #4361ee;
+    border-color: #4361ee;
+}
+
+.btn-primary:hover {
+    background-color: #3a56d4;
+    border-color: #3a56d4;
+}
+
+.alert {
+    border-radius: 10px;
+}
+
+footer {
+    margin-top: 3rem;
+}
+
+/* 仪表板卡片 */
+.dashboard-card {
+    border-left: 5px solid #4361ee;
+    border-radius: 8px;
+}
+
+/* 进度条 */
+.progress {
+    height: 1.5rem;
+    border-radius: 10px;
+}
+
+/* 表格 */
+.table th {
+    background-color: #e9ecef;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .display-4 {
+        font-size: 2.5rem;
+    }
+}

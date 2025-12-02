@@ -1,0 +1,189 @@
+{% extends "base.html" %}
+
+{% block title %}仪表板 - 瘦子增重增肌锻炼系统{% endblock %}
+
+{% block extra_css %}
+<link href="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.css" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8">
+        <h2 class="mb-4"><i class="bi bi-speedometer2"></i> 训练仪表板</h2>
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <div class="card dashboard-card shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="bi bi-calendar-week text-primary"></i> 当前周计划</h5>
+                        {% if plan %}
+                        <p class="card-text">
+                            计划周期：{{ plan.start_date }} 至 {{ plan.end_date }}<br>
+                            生成于：{{ plan.generated_at }}
+                        </p>
+                        <a href="{{ url_for('view_plan', plan_id=plan.id) }}" class="btn btn-outline-primary btn-sm">查看详情</a>
+                        {% else %}
+                        <p class="card-text text-muted">您还没有生成任何计划。</p>
+                        <a href="{{ url_for('generate_plan') }}" class="btn btn-primary btn-sm">生成计划</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <div class="card dashboard-card shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="bi bi-clipboard-check text-success"></i> 本周完成情况</h5>
+                        {% if daily_workouts %}
+                            {% set completed = daily_workouts | selectattr('completed') | list | length %}
+                            <p class="card-text">
+                                已完成 {{ completed }} / {{ daily_workouts | length }} 天
+                            </p>
+                            <div class="progress" style="height: 20px;">
+                                <div class="progress-bar bg-success" role="progressbar" style="width: {{ (completed / daily_workouts|length) * 100 }}%;">
+                                    {{ ((completed / daily_workouts|length) * 100) | round(1) }}%
+                                </div>
+                            </div>
+                        {% else %}
+                            <p class="card-text text-muted">暂无每日锻炼数据。</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0"><i class="bi bi-graph-up"></i> 体重趋势</h5>
+            </div>
+            <div class="card-body">
+                {% if weight_logs %}
+                <canvas id="weightChart" height="250"></canvas>
+                {% else %}
+                <p class="text-muted">暂无体重记录。</p>
+                {% endif %}
+                <form method="POST" action="{{ url_for('log_weight') }}" class="row g-3 mt-3">
+                    <div class="col-auto">
+                        <label for="weight" class="visually-hidden">体重 (kg)</label>
+                        <input type="number" step="0.1" class="form-control" id="weight" name="weight" placeholder="体重" required>
+                    </div>
+                    <div class="col-auto">
+                        <label for="notes" class="visually-hidden">备注</label>
+                        <input type="text" class="form-control" id="notes" name="notes" placeholder="备注（可选）">
+                    </div>
+                    <div class="col-auto">
+                        <button type="submit" class="btn btn-primary">记录体重</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card mb-4">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="mb-0"><i class="bi bi-lightning-charge"></i> 今日训练</h5>
+            </div>
+            <div class="card-body">
+                <!-- DEBUG: now_date={{ now_date }}, daily_workouts count={{ daily_workouts|length }} -->
+                {% if today_workout %}
+                    <h6>第 {{ today_workout.day_number }} 天 · {{ today_workout.focus if today_workout.focus else '全身' }}</h6>
+                    {% set workout = today_workout.workout_data %}
+                    {% if workout.exercises %}
+                    <ul class="list-unstyled small mb-3">
+                        {% for ex in workout.exercises %}
+                        <li class="mb-2">
+                            <strong>{{ ex.name }}</strong><br>
+                            <span class="text-muted">{{ ex.sets }} 组 × {{ ex.reps }} 次，重量 {{ ex.weight }}，休息 {{ ex.rest }}</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                    {% if workout.tips %}
+                    <p class="small text-muted"><i class="bi bi-lightbulb"></i> {{ workout.tips }}</p>
+                    {% endif %}
+                    {% if not today_workout.completed %}
+                    <form method="POST" action="{{ url_for('complete_daily', daily_id=today_workout.id) }}">
+                        <button type="submit" class="btn btn-success btn-sm">标记完成</button>
+                    </form>
+                    {% else %}
+                    <span class="badge bg-success">已完成</span>
+                    {% endif %}
+                {% else %}
+                    <p class="text-muted">今日无安排或计划未生成。</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header bg-secondary text-white">
+                <h5 class="mb-0"><i class="bi bi-list-check"></i> 快速操作</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('generate_plan') }}" class="btn btn-outline-primary">生成新计划</a>
+                    <a href="{{ url_for('profile') }}" class="btn btn-outline-secondary">编辑个人资料</a>
+                    <a href="{{ url_for('view_plan', plan_id=plan.id) if plan else '#' }}" class="btn btn-outline-info {% if not plan %}disabled{% endif %}">查看完整计划</a>
+                    <a href="{{ url_for('about') }}" class="btn btn-outline-dark">查看帮助</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header bg-light">
+                <h5 class="mb-0"><i class="bi bi-info-circle"></i> 系统提示</h5>
+            </div>
+            <div class="card-body">
+                <ul class="small">
+                    <li>保持一致性是增肌的关键，尽量完成每日训练。</li>
+                    <li>每周记录体重2-3次，观察趋势。</li>
+                    <li>如果感觉疲劳，可以适当调整训练量。</li>
+                    <li>确保摄入足够蛋白质和热量。</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+    {% if weight_logs %}
+    const weightCtx = document.getElementById('weightChart').getContext('2d');
+    const labels = [
+        {% for log in weight_logs %}
+        '{{ log.measured_at.strftime('%Y-%m-%d') }}'{% if not loop.last %},{% endif %}
+        {% endfor %}
+    ].reverse();
+    const data = [
+        {% for log in weight_logs %}
+        {{ log.weight_kg }}{% if not loop.last %},{% endif %}
+        {% endfor %}
+    ].reverse();
+    new Chart(weightCtx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: '体重 (kg)',
+                data: data,
+                borderColor: '#4361ee',
+                backgroundColor: 'rgba(67, 97, 238, 0.1)',
+                fill: true,
+                tension: 0.3
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: true }
+            },
+            scales: {
+                y: {
+                    beginAtZero: false
+                }
+            }
+        }
+    });
+    {% endif %}
+</script>
+{% endblock %}

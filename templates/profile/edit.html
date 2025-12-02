@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+
+{% block title %}个人资料 - 瘦子增重增肌锻炼系统{% endblock %}
+
+{% block extra_css %}
+<style>
+    .equipment-checkbox {
+        display: inline-block;
+        margin-right: 15px;
+        margin-bottom: 10px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-10 mx-auto">
+        <h2 class="mb-4"><i class="bi bi-person-circle"></i> 个人资料</h2>
+        <p class="text-muted">完善您的信息，以便系统生成个性化锻炼计划。</p>
+
+        <form method="POST" action="{{ url_for('profile') }}" class="needs-validation" novalidate>
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">基本信息</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <label for="age" class="form-label">年龄</label>
+                            <input type="number" class="form-control" id="age" name="age" min="10" max="100" value="{{ profile.age if profile }}">
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label for="height_cm" class="form-label">身高 (cm)</label>
+                            <input type="number" step="0.1" class="form-control" id="height_cm" name="height_cm" min="100" max="250" value="{{ profile.height_cm if profile }}">
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label for="current_weight_kg" class="form-label">当前体重 (kg)</label>
+                            <input type="number" step="0.1" class="form-control" id="current_weight_kg" name="current_weight_kg" min="30" max="200" value="{{ profile.current_weight_kg if profile }}" required>
+                            <div class="invalid-feedback">
+                                请输入有效的体重。
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label for="target_weight_kg" class="form-label">目标体重 (kg)</label>
+                            <input type="number" step="0.1" class="form-control" id="target_weight_kg" name="target_weight_kg" min="30" max="200" value="{{ profile.target_weight_kg if profile }}">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="body_fat_percent" class="form-label">体脂率 (%)</label>
+                            <input type="number" step="0.1" class="form-control" id="body_fat_percent" name="body_fat_percent" min="5" max="50" value="{{ profile.body_fat_percent if profile }}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="training_experience" class="form-label">训练经验</label>
+                            <select class="form-select" id="training_experience" name="training_experience">
+                                <option value="beginner" {% if profile and profile.training_experience == 'beginner' %}selected{% endif %}>新手</option>
+                                <option value="intermediate" {% if profile and profile.training_experience == 'intermediate' %}selected{% endif %}>中级</option>
+                                <option value="advanced" {% if profile and profile.training_experience == 'advanced' %}selected{% endif %}>高级</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">可用器械</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">请选择您能使用的器械（可多选）：</p>
+                    {% set equipment_options = ['哑铃', '杠铃', '卧推架', '深蹲架', '引体向上杆', '弹力带', '壶铃', '跑步机', '动感单车', '瑜伽垫', '无器械'] %}
+                    {% set current_equip = profile.available_equipment if profile and profile.available_equipment else [] %}
+                    <div class="row">
+                        {% for equip in equipment_options %}
+                        <div class="col-md-3 equipment-checkbox">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="equipment" value="{{ equip }}" id="equip_{{ loop.index }}"
+                                    {% if equip in current_equip %}checked{% endif %}>
+                                <label class="form-check-label" for="equip_{{ loop.index }}">
+                                    {{ equip }}
+                                </label>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">训练偏好</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="days_per_week" class="form-label">每周训练天数</label>
+                            <select class="form-select" id="days_per_week" name="days_per_week">
+                                {% for i in range(1, 8) %}
+                                <option value="{{ i }}" {% if profile and profile.preferences and profile.preferences.days_per_week == i %}selected{% endif %}>{{ i }} 天</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="session_minutes" class="form-label">每次训练时长 (分钟)</label>
+                            <select class="form-select" id="session_minutes" name="session_minutes">
+                                <option value="30" {% if profile and profile.preferences and profile.preferences.session_minutes == 30 %}selected{% endif %}>30</option>
+                                <option value="45" {% if profile and profile.preferences and profile.preferences.session_minutes == 45 %}selected{% endif %}>45</option>
+                                <option value="60" {% if profile and profile.preferences and profile.preferences.session_minutes == 60 %}selected{% endif %}>60</option>
+                                <option value="75" {% if profile and profile.preferences and profile.preferences.session_minutes == 75 %}selected{% endif %}>75</option>
+                                <option value="90" {% if profile and profile.preferences and profile.preferences.session_minutes == 90 %}selected{% endif %}>90</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">重点部位（可多选）</label>
+                            <div>
+                                {% set focus_options = ['胸部', '背部', '肩部', '腿部', '手臂', '核心', '全身', '有氧'] %}
+                                {% set current_focus = profile.preferences.focus if profile and profile.preferences and profile.preferences.focus else [] %}
+                                {% for focus in focus_options %}
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" name="focus" value="{{ focus }}" id="focus_{{ loop.index }}"
+                                        {% if focus in current_focus %}checked{% endif %}>
+                                    <label class="form-check-label" for="focus_{{ loop.index }}">{{ focus }}</label>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="avoid" class="form-label">希望避免的动作或部位</label>
+                        <textarea class="form-control" id="avoid" name="avoid" rows="2" placeholder="例如：肩部受伤，避免过头推举">{{ profile.preferences.avoid if profile and profile.preferences and profile.preferences.avoid }}</textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                <a href="{{ url_for('dashboard') }}" class="btn btn-secondary me-md-2">取消</a>
+                <button type="submit" class="btn btn-primary btn-lg">保存资料</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

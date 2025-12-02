@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}关于 - 瘦子增重增肌锻炼系统{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <h1 class="mb-4">关于本项目</h1>
+        <p class="lead">
+            这是一个专为瘦子（外胚型）设计的增重增肌锻炼系统，旨在通过科学计划和持续跟踪帮助用户实现健康增肌。
+        </p>
+
+        <h3 class="mt-5">系统特点</h3>
+        <ul>
+            <li><strong>个性化计划生成</strong>：利用DeepSeek AI分析用户的身体数据、可用器械、训练经验，生成适合的周锻炼计划。</li>
+            <li><strong>每日分解与跟踪</strong>：将周计划分解到每一天，提供打卡功能，记录训练感受和完成度。</li>
+            <li><strong>体重与进度可视化</strong>：记录体重变化，生成趋势图表，直观展示进步。</li>
+            <li><strong>灵活调整</strong>：根据用户反馈和体重变化，可重新生成或调整计划。</li>
+            <li><strong>全栈技术</strong>：使用Flask + PyMySQL + Bootstrap + OpenAI SDK构建，代码开源。</li>
+        </ul>
+
+        <h3 class="mt-5">技术栈</h3>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">后端</h5>
+                        <ul class="list-unstyled">
+                            <li><i class="bi bi-check-circle text-success"></i> Flask - Python Web框架</li>
+                            <li><i class="bi bi-check-circle text-success"></i> PyMySQL - MySQL数据库驱动</li>
+                            <li><i class="bi bi-check-circle text-success"></i> OpenAI SDK + httpx - 调用DeepSeek API</li>
+                            <li><i class="bi bi-check-circle text-success"></i> python-dotenv - 环境变量管理</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">前端</h5>
+                        <ul class="list-unstyled">
+                            <li><i class="bi bi-check-circle text-success"></i> Bootstrap 5 - 响应式UI</li>
+                            <li><i class="bi bi-check-circle text-success"></i> Chart.js - 数据可视化</li>
+                            <li><i class="bi bi-check-circle text-success"></i> Jinja2 - 模板引擎</li>
+                            <li><i class="bi bi-check-circle text-success"></i> Vanilla JavaScript - 交互逻辑</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h3 class="mt-5">使用说明</h3>
+        <ol>
+            <li>注册账号并登录。</li>
+            <li>填写个人资料：身高、体重、目标、可用器械等。</li>
+            <li>系统生成您的第一份周锻炼计划。</li>
+            <li>每天按照计划训练，并打卡记录。</li>
+            <li>定期记录体重，查看进度图表。</li>
+            <li>根据进展调整计划或重新生成。</li>
+        </ol>
+
+        <div class="alert alert-info mt-5">
+            <h4><i class="bi bi-lightbulb"></i> 免责声明</h4>
+            <p class="mb-0">
+                本系统仅为健身辅助工具，不替代专业医疗或健身教练建议。请在开始任何锻炼计划前咨询医生，确保训练安全。
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

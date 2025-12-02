@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %}生成计划 - 瘦子增重增肌锻炼系统{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0"><i class="bi bi-magic"></i> 生成个性化周计划</h4>
+            </div>
+            <div class="card-body">
+                <p class="lead">
+                    系统将根据您的个人资料和偏好，利用AI生成一份为期一周的锻炼计划。
+                </p>
+                <div class="alert alert-info">
+                    <h5><i class="bi bi-info-circle"></i> 生成说明</h5>
+                    <ul class="mb-0">
+                        <li>请确保您的个人资料已填写完整。</li>
+                        <li>生成过程可能需要10-30秒，请耐心等待。</li>
+                        <li>生成的计划将自动设置为“当前活跃计划”，并覆盖之前的活跃计划。</li>
+                        <li>您可以在生成后查看并调整每日训练。</li>
+                    </ul>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <h5><i class="bi bi-person-check"></i> 您的资料摘要</h5>
+                                {% if profile %}
+                                <ul class="list-unstyled">
+                                    <li><strong>身高：</strong>{{ profile.height_cm }} cm</li>
+                                    <li><strong>当前体重：</strong>{{ profile.current_weight_kg }} kg</li>
+                                    <li><strong>目标体重：</strong>{{ profile.target_weight_kg }} kg</li>
+                                    <li><strong>训练经验：</strong>{{ profile.training_experience }}</li>
+                                    <li><strong>可用器械：</strong>{{ profile.available_equipment | join(', ') }}</li>
+                                </ul>
+                                {% else %}
+                                <p class="text-danger">您尚未填写个人资料，请先<a href="{{ url_for('profile') }}">填写资料</a>。</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <h5><i class="bi bi-gear"></i> 生成选项</h5>
+                                <form method="POST" action="{{ url_for('generate_plan') }}">
+                                    <div class="mb-3">
+                                        <label for="focus_override" class="form-label">重点部位（可选）</label>
+                                        <input type="text" class="form-control" id="focus_override" name="focus_override" placeholder="留空将使用资料中的偏好">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="days_override" class="form-label">训练天数（可选）</label>
+                                        <select class="form-select" id="days_override" name="days_override">
+                                            <option value="">使用资料设置</option>
+                                            <option value="3">3天</option>
+                                            <option value="4">4天</option>
+                                            <option value="5">5天</option>
+                                            <option value="6">6天</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-check mb-3">
+                                        <input class="form-check-input" type="checkbox" id="include_cardio" name="include_cardio" checked>
+                                        <label class="form-check-label" for="include_cardio">
+                                            包含有氧训练
+                                        </label>
+                                    </div>
+                                    <div class="d-grid">
+                                        <button type="submit" class="btn btn-primary btn-lg" {% if not profile %}disabled{% endif %}>
+                                            <i class="bi bi-lightning-charge"></i> 开始生成计划
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {% if not profile %}
+                <div class="alert alert-warning mt-3">
+                    <h5><i class="bi bi-exclamation-triangle"></i> 需要完善资料</h5>
+                    <p>您必须先填写个人资料，系统才能生成个性化计划。</p>
+                    <a href="{{ url_for('profile') }}" class="btn btn-warning">去填写资料</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
